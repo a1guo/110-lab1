@@ -1,0 +1,3 @@
+As a player, I want to be able to see the daily price of lemonade somewhere on the screen.
+As a player, I want to be able to see the daily prices of goods and materials in a marketplace screen.
+As a player I want to have a place to slot in my daily price of lemonade.
