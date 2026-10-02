@@ -55,6 +55,29 @@ class LemonadeStand {
     earn(amount: number){
         this.cash += amount;
     }
+
+    get(item: string){
+        return this[item]
+    }
+
+    use(amount:number){
+        if(this.cups - amount < 0 || this.ice - amount < 0 || this.lemons - amount < 0 || this.sugar - amount < 0){
+            let min = Math.min(this.cups,this.ice,this.lemons,this.sugar);
+            this.cups -= min;
+            this.ice -= min;
+            this.lemons -= min;
+            this.sugar -= min;
+
+            return min;
+        }else{
+            this.cups -= amount;
+            this.ice -= amount;
+            this.lemons -= amount;
+            this.sugar -= amount;
+
+            return amount;
+        }
+    }
 }
 
 
@@ -104,17 +127,37 @@ async function RunGame(){
         console.log("loading weather forecast data...");
         await sleep(1000)
         console.log("Weather: " + weather);
-        await sleep(1000)
+        await sleep(2000)
         console.clear();
 
         //load price of goods
         console.log("===Store prices today ===");
+        await sleep(200);
         console.log("Cups: $" + store.getPrice("cups"));
+        await sleep(200);
         console.log("Ice: $" + store.getPrice("ice"));
+        await sleep(200);
         console.log("Lemons: $" + store.getPrice("lemons"));
+        await sleep(200);
         console.log("Sugar: $" + store.getPrice("sugar"));
+        await sleep(200);
+
+
+        //INVENTORY
+        console.log("\n===INVENTORY===")
+        await sleep(200);
+        console.log("Cups: " + stand.get("cups"));
+        await sleep(200);
+        console.log("Ice: " + stand.get("ice"));
+        await sleep(200);
+        console.log("Lemons: " + stand.get("lemons"));
+        await sleep(200);
+        console.log("Sugar: " + stand.get("sugar"));
+        await sleep(200);
+
 
         let items = ["cups", "ice", "lemons", "sugar"];
+        console.log("\n\nBALANCE: $" + stand.cash);
         const purchase = await rl.question("How many of each items would you like yo buy today (0102 format, up to 9 each)? ");
 
         for(let i = 0; i<items.length; i++){
@@ -126,17 +169,16 @@ async function RunGame(){
         const userPrice = await rl.question("What would you like to price each cup today?: ");
         console.log("chosen lemonade unit price: " + userPrice);
         await sleep(500);
-        const cupCount = await rl.question("How many cups would you like to make today?: ");
-        console.log("chosen lemonade cup number: " + cupCount);
-        await sleep(100)
+        
+        const cupCount = stand.use(potentialSales);
+
+        await sleep(1000)
         console.clear();
         await sleep(500)
 
         
         console.log("Serving lemonade...")
         await sleep(2000)
-
-
 
 
         //DAY OVER
@@ -175,6 +217,7 @@ async function RunGame(){
 
         }
         dayCount += 1;
+        console.clear();
         
         
 
