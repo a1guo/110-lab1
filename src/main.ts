@@ -51,6 +51,10 @@ class LemonadeStand {
         this[item] = this[item]+ amount;
         return;
     }
+
+    earn(amount: number){
+        this.cash += amount;
+    }
 }
 
 
@@ -83,6 +87,17 @@ async function RunGame(){
         weatherIndex = Math.floor(Math.random() * weathers.length);
         weather = weathers[weatherIndex];
 
+        let potentialSales;
+        if(weather == "HOT"){
+            potentialSales = 15;
+        }else if(weather == "WARM"){
+            potentialSales = 10;
+        }else if(weather == "COOL"){
+            potentialSales = 5;
+        }else{
+            potentialSales = 2;
+        }
+
         //day start
         console.log("DAY: " + dayCount);
         await sleep(1000);
@@ -100,7 +115,7 @@ async function RunGame(){
         console.log("Sugar: $" + store.getPrice("sugar"));
 
         let items = ["cups", "ice", "lemons", "sugar"];
-        const purchase = await rl.question("How many of each items would you like yo buy today (0102 format, up to 9 each)?");
+        const purchase = await rl.question("How many of each items would you like yo buy today (0102 format, up to 9 each)? ");
 
         for(let i = 0; i<items.length; i++){
             let qty = Number(purchase[i]) || 0;
@@ -113,11 +128,55 @@ async function RunGame(){
         await sleep(500);
         const cupCount = await rl.question("How many cups would you like to make today?: ");
         console.log("chosen lemonade cup number: " + cupCount);
-        await sleep(1000)
+        await sleep(100)
+        console.clear();
+        await sleep(500)
 
-
+        
         console.log("Serving lemonade...")
         await sleep(2000)
+
+
+
+
+        //DAY OVER
+        console.log("+++ DAY " + dayCount + " OVER +++");
+        await sleep(1000)
+
+        let sales: number;
+        
+        //calc
+        if(parseFloat(cupCount) > potentialSales){
+            //overmade
+            sales = potentialSales;
+        }else{
+            sales = parseFloat(cupCount);
+        }
+
+        let grossIncome = sales * parseFloat(userPrice);
+        stand.earn(grossIncome);
+
+        //performance
+        console.log("CUPS SOLD: " + sales);
+        await sleep(700)
+        console.log("GROSS INCOME: $" + grossIncome)
+        await sleep(2000)
+
+        console.log("BALANCE: $" + stand.cash);
+
+
+        //continue?
+        await sleep(2000)
+        const continueGame = await rl.question("Continue? (y/n): ");
+        if(continueGame == "n"){
+            running = false;
+            rl.close();
+            console.clear();
+
+        }
+        dayCount += 1;
+        
+        
 
         
     
